@@ -52,5 +52,37 @@ def post_hotel(
     return {"status": "OK"}
 
 
+@app.put("/hotels/{hotel_id}")
+def put_hotel(
+        hotel_id: int,
+        title: str = Body(),
+        name: str = Body(),
+) -> dict:
+    for hotel in hotels:
+        if hotel["id"] == hotel_id:
+            hotel["title"] = title
+            hotel["name"] = name
+
+            return {"status": "OK"}
+
+    return {"status": "Отель не существует"}
+
+
+@app.patch("/hotels/{hotel_id}")
+def patch_hotel(
+        hotel_id: int,
+        title: str | None = Body(None),
+        name: str | None = Body(None),
+) -> dict:
+    for hotel in hotels:
+        if hotel["id"] == hotel_id:
+            hotel["title"] = title if title else hotel["title"]
+            hotel["name"] = name if name else hotel["name"]
+
+            return {"status": "OK"}
+
+    return {"status": "Отель не существует"}
+
+
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

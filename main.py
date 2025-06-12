@@ -9,7 +9,7 @@ hotels = [
 ]
 
 
-@app.get("/hotels")
+@app.get("/hotels", summary="Список отелей или отеля")
 def get_hotels(
         id: int | None = Query(None, description="Айди отеля"),
         title: str | None = Query(None, description="Заголовок отеля"),
@@ -29,14 +29,14 @@ def get_hotels(
     return hotels_
 
 
-@app.delete("/hotels/{hotel_id}")
+@app.delete("/hotels/{hotel_id}", summary="Удаление отеля")
 def delete_hotel(hotel_id: int) -> dict:
     global hotels
     hotels = [hotel for hotel in hotels if hotel["id"] != hotel_id]
     return {"status": "OK"}
 
 
-@app.post("/hotels")
+@app.post("/hotels", summary="Добавление отеля")
 def post_hotel(
         title: str = Body(),
         name: str = Body(),
@@ -52,7 +52,7 @@ def post_hotel(
     return {"status": "OK"}
 
 
-@app.put("/hotels/{hotel_id}")
+@app.put("/hotels/{hotel_id}", summary="Полное изменение отеля")
 def put_hotel(
         hotel_id: int,
         title: str = Body(),
@@ -68,7 +68,7 @@ def put_hotel(
     return {"status": "Отель не существует"}
 
 
-@app.patch("/hotels/{hotel_id}")
+@app.patch("/hotels/{hotel_id}", summary="Частичное изменение отеля")
 def patch_hotel(
         hotel_id: int,
         title: str | None = Body(None),
@@ -76,8 +76,10 @@ def patch_hotel(
 ) -> dict:
     for hotel in hotels:
         if hotel["id"] == hotel_id:
-            hotel["title"] = title if title else hotel["title"]
-            hotel["name"] = name if name else hotel["name"]
+            if title is not None:
+                hotel["title"] = title
+            if name is not None:
+                hotel["name"] = name
 
             return {"status": "OK"}
 

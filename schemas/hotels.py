@@ -12,6 +12,8 @@ class HotelPATCH(BaseModel):
 
 class HotelGET(HotelPATCH):
     id: int | None = Field(None, description="Айди отеля")
+    page: int = Field(1, description="Страница")
+    per_page: int = Field(3, description="Количество отелей за страницу")
 
 
 class HotelADD(BaseModel):

@@ -9,20 +9,18 @@ router = APIRouter(
 
 
 hotels = [
-    {"id": 1, "title": "Moscow", "name": "Москва"},
-    {"id": 2, "title": "Almaty", "name": "Алматы"},
+    {"id": 1, "title": "Москва", "name": "moscow"},
+    {"id": 2, "title": "Алматы", "name": "almaty"},
+    {"id": 3, "title": "Токио", "name": "tokyo"},
+    {"id": 4, "title": "Минск", "name": "minsk"},
+    {"id": 5, "title": "Берлин", "name": "berlin"},
+    {"id": 6, "title": "Париж", "name": "paris"},
+    {"id": 7, "title": "Рим", "name": "rome"},
 ]
 
 
 @router.get("", summary="Список отелей или отеля")
-def get_hotels(
-        data: HotelGET = Query(openapi_examples={
-            "1": {"summary": "Все города", "value": {}},
-            "2": {"summary": "Москва", "value": {
-                "title": "Moscow"
-            }},
-        })
-) -> list[HotelGET]:
+def get_hotels(data: HotelGET = Query()) -> list[HotelGET]:
     hotels_ = []
     for hotel in hotels:
         if data.id and hotel["id"] != data.id:
@@ -35,17 +33,20 @@ def get_hotels(
         hotel_model = HotelGET.model_validate(hotel)
         hotels_.append(hotel_model)
 
-    return hotels_
+    start = data.per_page * (data.page - 1)
+    end = data.per_page * data.page
+
+    return hotels_[start: end]
 
 
 @router.post("", summary="Добавление отеля")
 def post_hotel(
         data: HotelADD = Body(openapi_examples={
             "1": {"summary": "Пекин", "value": {
-                "title": "Beijing", "name": "Пекин"
+                "title": "Пекин", "name": "beijing"
             }},
             "2": {"summary": "Ошибка", "value": {
-                "title": "Beijing"
+                "title": "Пекин"
             }},
         })
 ) -> Status:
@@ -65,11 +66,11 @@ def post_hotel(
 def put_hotel(
         hotel_id: int,
         data: HotelADD = Body(openapi_examples={
-            "1": {"summary": "Москва", "value": {
-                "title": "Mega_Moscow", "name": "Мега Москва"
+            "1": {"summary": "Москва -> Пекин", "value": {
+                "title": "Пекин", "name": "beijing"
             }},
             "2": {"summary": "Ошибка", "value": {
-                "title": "Mega_Moscow"
+                "title": "Пекин"
             }},
         })
 ) -> Status:
@@ -86,10 +87,10 @@ def patch_hotel(
         hotel_id: int,
         data: HotelPATCH = Body(openapi_examples={
             "1": {"summary": "Полное изменение", "value": {
-                "title": "Mega_Moscow", "name": "Мега Москва"
+                "title": "Пекин", "name": "beijing"
             }},
             "2": {"summary": "Частичное изменение", "value": {
-                "title": "Super_Moscow"
+                "title": "Хайнань"
             }},
         })
 ) -> Status:

@@ -1,6 +1,9 @@
-from fastapi import APIRouter, Body, Query
+from typing import Annotated
 
-from schemas.hotels import HotelADD, Status, HotelGET, HotelPATCH
+from fastapi import APIRouter, Body, Query, Depends
+
+from schemas.dependencies import PaginationDep, Status
+from schemas.hotels import HotelADD, HotelGET, HotelPATCH
 
 router = APIRouter(
     prefix="/hotels",
@@ -20,7 +23,10 @@ hotels = [
 
 
 @router.get("", summary="Список отелей или отеля")
-def get_hotels(data: HotelGET = Query()) -> list[HotelGET]:
+def get_hotels(
+        data: Annotated[HotelGET, Depends()],
+        pagination: PaginationDep,
+) -> list[HotelGET]:
     hotels_ = []
     for hotel in hotels:
         if data.id and hotel["id"] != data.id:
@@ -33,10 +39,10 @@ def get_hotels(data: HotelGET = Query()) -> list[HotelGET]:
         hotel_model = HotelGET.model_validate(hotel)
         hotels_.append(hotel_model)
 
-    start = data.per_page * (data.page - 1)
-    end = data.per_page * data.page
+    page = 1 if pagination.page is None else pagination.page
+    per_page = 3 if pagination.per_page is None else pagination.per_page
 
-    return hotels_[start: end]
+    return hotels_[per_page * (page - 1): per_page * page]
 
 
 @router.post("", summary="Добавление отеля")

@@ -1,9 +1,9 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Query, Depends
+from fastapi import APIRouter, Body, Depends
 
-from schemas.dependencies import PaginationDep, Status
-from schemas.hotels import HotelADD, HotelGET, HotelPATCH
+from app.schemas.dependencies import PaginationDep, Status
+from app.schemas.hotels import HotelADD, HotelGET, HotelPATCH
 
 router = APIRouter(
     prefix="/hotels",

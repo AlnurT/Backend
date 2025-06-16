@@ -1,12 +1,9 @@
 import uvicorn
 from fastapi import FastAPI
+from routers.hotels import router as router_hotels
 
 app = FastAPI()
-
-
-@app.get("/")
-def func():
-    return "Hello World"
+app.include_router(router_hotels)
 
 
 if __name__ == "__main__":

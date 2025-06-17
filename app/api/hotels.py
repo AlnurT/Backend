@@ -6,7 +6,7 @@ from app.schemas.dependencies import PaginationDep, Status
 from app.schemas.hotels import HotelADD, HotelGET, HotelPATCH
 
 router = APIRouter(
-    prefix="/hotels",
+    prefix="/hotels.py",
     tags=["Отели"],
 )
 

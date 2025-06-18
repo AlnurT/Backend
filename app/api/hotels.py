@@ -22,11 +22,11 @@ async def get_hotels(
     per_page = pagination.per_page or 5
     async with async_session() as session:
         query = select(HotelsOrm)
-        if hotels_data.id:
-            query = query.filter_by(id=hotels_data.id)
-
         if hotels_data.title:
-            query = query.filter_by(title=hotels_data.title)
+            query = query.filter(HotelsOrm.title.ilike(f"%{hotels_data.title}%"))
+
+        if hotels_data.location:
+            query = query.filter(HotelsOrm.location.ilike(f"%{hotels_data.location}%"))
 
         query = (
             query
@@ -43,10 +43,10 @@ async def get_hotels(
 async def post_hotel(
         hotel_data: HotelADD = Body(openapi_examples={
             "1": {"summary": "Пекин", "value": {
-                "title": "Пекин", "location": "beijing"
+                "title": "Дракон", "location": "Пекин"
             }},
             "2": {"summary": "Ошибка", "value": {
-                "title": "Пекин"
+                "title": "Дракон"
             }},
         })
 ) -> Status:

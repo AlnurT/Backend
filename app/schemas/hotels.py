@@ -5,7 +5,6 @@ from pydantic import BaseModel, Field
 
 
 class HotelGET(BaseModel):
-    id: Annotated[int | None, Query(None, description="Айди отеля")]
     title: Annotated[str | None, Query(None, description="Заголовок отеля")]
     location: Annotated[str | None, Query(None, description="Название отеля")]
 

@@ -13,7 +13,7 @@ class Status(BaseModel):
 
 
 class PaginationParams(BaseModel):
-    page: Annotated[int | None, Query(None, ge=1, description="Страница")]
+    page: Annotated[int | None, Query(1, ge=1, description="Страница")]
     per_page: Annotated[int | None, Query(
         None, ge=1, le=10, description="Количество отелей за страницу"
     )]

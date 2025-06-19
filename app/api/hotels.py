@@ -7,6 +7,7 @@ from app.database import async_session
 from app.models.hotels import HotelsOrm
 from app.schemas.dependencies import PaginationDep, Status
 from app.schemas.hotels import HotelADD, HotelGET, HotelPATCH
+from repositories.hotels import HotelsRepository
 
 router = APIRouter(
     prefix="/hotels",
@@ -21,22 +22,12 @@ async def get_hotels(
 ) -> list[HotelGET]:
     per_page = pagination.per_page or 5
     async with async_session() as session:
-        query = select(HotelsOrm)
-        if hotels_data.title:
-            query = query.filter(HotelsOrm.title.icontains(hotels_data.title))
-
-        if hotels_data.location:
-            query = query.filter(HotelsOrm.location.icontains(hotels_data.location))
-
-        query = (
-            query
-            .limit(per_page)
-            .offset(per_page * (pagination.page - 1))
+        return await HotelsRepository(session).get_all(
+            title=hotels_data.title,
+            location=hotels_data.location,
+            limit=per_page,
+            offset=per_page * (pagination.page - 1),
         )
-        result = await session.execute(query)
-        hotels = result.scalars().all()
-
-    return hotels
 
 
 @router.post("", summary="Добавление отеля")
@@ -49,13 +40,14 @@ async def post_hotel(
                 "title": "Дракон"
             }},
         })
-) -> Status:
+):
     async with async_session() as session:
-        add_hotel_stmt = insert(HotelsOrm).values(**hotel_data.model_dump())
-        await session.execute(add_hotel_stmt)
+        hotel = await HotelsRepository(session).add(
+            data=hotel_data.model_dump()
+        )
         await session.commit()
 
-    return Status.model_validate({"status": "OK"})
+    return {"status": "OK", "data": hotel}
 
 
 @router.put("/{hotel_id}", summary="Полное изменение отеля")

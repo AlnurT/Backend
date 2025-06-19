@@ -1,6 +1,7 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Body, Depends, HTTPException
+from sqlalchemy.exc import MultipleResultsFound
 
 from app.database import async_session
 from app.schemas.dependencies import PaginationDep, Status
@@ -47,23 +48,36 @@ async def post_hotel(
 
 
 @router.put("/{hotel_id}", summary="Полное изменение отеля")
-def put_hotel(
+async def put_hotel(
         hotel_id: int,
         data: HotelADD = Body(openapi_examples={
-            "1": {"summary": "Москва -> Пекин", "value": {
-                "title": "Пекин", "name": "beijing"
+            "1": {"summary": "Пекин -> Хайнань", "value": {
+                "title": "Змея", "location": "Хайнань"
             }},
             "2": {"summary": "Ошибка", "value": {
-                "title": "Пекин"
+                "title": "Змея"
             }},
         })
-) -> Status:
-    for hotel in hotels:
-        if hotel["id"] == hotel_id:
-            hotel["title"] = data.title
-            hotel["name"] = data.name
+):
+    async with async_session() as session:
+        try:
+            hotel = await HotelsRepository(session).get_one_or_none(id=hotel_id)
+        except MultipleResultsFound:
+            raise HTTPException(
+                status_code=400,
+                detail="По данному фильтру несколько результатов!",
+            )
 
-    return Status.model_validate({"status": "OK"})
+        if not hotel:
+            raise HTTPException(
+                status_code=404,
+                detail="По данному фильтру нет результатов!",
+            )
+
+        await HotelsRepository(session).edit(data, id=hotel_id)
+        await session.commit()
+
+    return {"status": "OK"}
 
 
 @router.patch("/{hotel_id}", summary="Частичное изменение отеля")
@@ -89,7 +103,24 @@ def patch_hotel(
 
 
 @router.delete("/{hotel_id}", summary="Удаление отеля")
-def delete_hotel(hotel_id: int) -> Status:
-    global hotels
-    hotels = [hotel for hotel in hotels if hotel["id"] != hotel_id]
-    return Status.model_validate({"status": "OK"})
+async def delete_hotel(hotel_id: int):
+    async with async_session() as session:
+        try:
+            hotel = await HotelsRepository(session).get_one_or_none(id=hotel_id)
+        except MultipleResultsFound:
+            raise HTTPException(
+                status_code=400,
+                detail="По данному фильтру несколько результатов!",
+            )
+
+        if not hotel:
+            raise HTTPException(
+                status_code=404,
+                detail="По данному фильтру нет результатов!",
+            )
+
+        await HotelsRepository(session).delete(id=hotel_id)
+        await session.commit()
+
+    return {"status": "OK"}
+

@@ -1,10 +1,8 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends
-from sqlalchemy import insert, select
 
 from app.database import async_session
-from app.models.hotels import HotelsOrm
 from app.schemas.dependencies import PaginationDep, Status
 from app.schemas.hotels import HotelADD, HotelGET, HotelPATCH
 from repositories.hotels import HotelsRepository
@@ -42,9 +40,7 @@ async def post_hotel(
         })
 ):
     async with async_session() as session:
-        hotel = await HotelsRepository(session).add(
-            data=hotel_data.model_dump()
-        )
+        hotel = await HotelsRepository(session).add(hotel_data)
         await session.commit()
 
     return {"status": "OK", "data": hotel}

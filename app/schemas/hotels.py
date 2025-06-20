@@ -1,20 +1,17 @@
-from typing import Annotated
-
-from fastapi import Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
-class HotelGET(BaseModel):
-    id: Annotated[int | None, Query(None, description="Айди отеля")]
-    title: Annotated[str | None, Query(None, description="Заголовок отеля")]
-    location: Annotated[str | None, Query(None, description="Название отеля")]
+class HotelAdd(BaseModel):
+    title: str = Field(description="Название отеля")
+    location: str = Field(description="Локация")
+
+
+class Hotel(HotelAdd):
+    id: int = Field(description="Айди отеля")
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class HotelPATCH(BaseModel):
-    title: str | None = Field(None, description="Заголовок отеля")
-    location: str | None = Field(None, description="Название отеля")
-
-
-class HotelADD(BaseModel):
-    title: str = Field(description="Заголовок отеля")
-    location: str = Field(description="Название отеля")
+    title: str | None = Field(None, description="Название отеля")
+    location: str | None = Field(None, description="Локация")

@@ -63,12 +63,13 @@ async def put_hotel(
                 "title": "Змея"
             }},
         })
-):
-    async with async_session() as session:
-        await HotelsRepository(session).edit(data, id=hotel_id)
-        await session.commit()
+) -> Status:
+    for hotel in hotels:
+        if hotel["id"] == hotel_id:
+            hotel["title"] = data.title
+            hotel["name"] = data.name
 
-    return {"status": "OK"}
+    return Status.model_validate({"status": "OK"})
 
 
 @router.patch("/{hotel_id}", summary="Частичное изменение отеля")
@@ -91,10 +92,7 @@ async def patch_hotel(
 
 
 @router.delete("/{hotel_id}", summary="Удаление отеля")
-async def delete_hotel(hotel_id: int):
-    async with async_session() as session:
-        await HotelsRepository(session).delete(id=hotel_id)
-        await session.commit()
-
-    return {"status": "OK"}
-
+def delete_hotel(hotel_id: int) -> Status:
+    global hotels
+    hotels = [hotel for hotel in hotels if hotel["id"] != hotel_id]
+    return Status.model_validate({"status": "OK"})

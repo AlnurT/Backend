@@ -27,6 +27,11 @@ async def register_user(
     hashed_password = pwd_context.hash(data.password)
     hashed_data = UserAdd(email=data.email, hashed_password=hashed_password)
     async with async_session() as session:
+        user = await UsersRepository(session).get_one_or_none(email=data.email)
+        print(user)
+        if user is not None:
+            return None
+
         await UsersRepository(session).add(hashed_data)
         await session.commit()
 

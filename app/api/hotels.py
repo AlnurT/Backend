@@ -3,7 +3,7 @@ from fastapi import APIRouter, Body, Query
 from app.database import async_session
 from app.schemas.dependencies import PaginationDep
 from app.schemas.hotels import HotelAdd, HotelPATCH
-from repositories.hotels import HotelsRepository
+from app.repositories.hotels import HotelsRepository
 
 router = APIRouter(
     prefix="/hotels",

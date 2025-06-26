@@ -1,6 +1,7 @@
 from datetime import datetime, timezone, timedelta
 
 import jwt
+from fastapi import HTTPException
 from passlib.context import CryptContext
 
 from app.config import settings
@@ -9,7 +10,8 @@ from app.config import settings
 class AuthServices:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    def create_access_token(self, data: dict) -> str:
+    @staticmethod
+    def create_access_token(data: dict) -> str:
         to_encode = data.copy()
         expire = datetime.now(timezone.utc) + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
@@ -27,3 +29,17 @@ class AuthServices:
 
     def verify_password(self, plain_password, hashed_password):
         return self.pwd_context.verify(plain_password, hashed_password)
+
+    @staticmethod
+    def decode_token(token: str) -> dict:
+        try:
+            return jwt.decode(
+                token,
+                settings.JWT_SECRET_KEY,
+                algorithms=[settings.JWT_ALGORITHM]
+            )
+        except jwt.exceptions.DecodeError:
+            raise HTTPException(
+                status_code=401,
+                detail="Неверный токен",
+            )

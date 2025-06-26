@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body, Query
 
 from app.database import async_session
-from app.schemas.dependencies import PaginationDep
+from app.api.dependencies import PaginationDep
 from app.schemas.hotels import HotelAdd, HotelPATCH
 from app.repositories.hotels import HotelsRepository
 

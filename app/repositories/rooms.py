@@ -1,4 +1,4 @@
-from repositories.base import BaseRepository
+from app.repositories.base import BaseRepository
 from app.models.rooms import RoomsOrm
 
 

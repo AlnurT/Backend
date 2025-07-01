@@ -2,7 +2,7 @@ from fastapi import APIRouter, Body
 
 from app.database import async_session
 from app.repositories.rooms import RoomsRepository
-from app.schemas.rooms import RoomAdd, RoomPATCH
+from app.schemas.rooms import RoomAdd, RoomAddRequest, RoomPatchRequest, RoomPatch
 
 router = APIRouter(
     prefix="/hotels",
@@ -13,7 +13,7 @@ router = APIRouter(
 @router.get("/{hotel_id}/rooms", summary="Список номеров отеля")
 async def get_rooms(hotel_id: int):
     async with async_session() as session:
-        return await RoomsRepository(session).get_all(hotel_id=hotel_id)
+        return await RoomsRepository(session).get_filtered(hotel_id=hotel_id)
 
 
 @router.get("/{hotel_id}/rooms/{room_id}", summary="Один номер отеля")
@@ -27,7 +27,7 @@ async def get_room(hotel_id: int, room_id: int):
 @router.post("/{hotel_id}/rooms", summary="Добавление номера")
 async def post_room(
         hotel_id: int,
-        room_data: RoomAdd = Body(openapi_examples={
+        room_data: RoomAddRequest = Body(openapi_examples={
             "1": {"summary": "Обычный номер", "value": {
                 "title": "Обычный",
                 "description": "Номер с видом на реку",
@@ -39,9 +39,9 @@ async def post_room(
             }},
         })
 ):
-    room_data.hotel_id = hotel_id
+    _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
     async with async_session() as session:
-        room = await RoomsRepository(session).add(room_data)
+        room = await RoomsRepository(session).add(_room_data)
         await session.commit()
 
     return {"status": "OK", "data": room}
@@ -51,7 +51,7 @@ async def post_room(
 async def put_room(
         hotel_id: int,
         room_id: int,
-        room_data: RoomAdd = Body(openapi_examples={
+        room_data: RoomAddRequest = Body(openapi_examples={
             "1": {"summary": "Обычный -> Люкс", "value": {
                 "title": "Люкс",
                 "description": "Номер с видом на реку",
@@ -63,9 +63,9 @@ async def put_room(
             }},
         })
 ):
-    room_data.hotel_id = hotel_id
+    _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
     async with async_session() as session:
-        await RoomsRepository(session).edit(room_data, id=room_id)
+        await RoomsRepository(session).edit(_room_data, id=room_id)
         await session.commit()
 
     return {"status": "OK"}
@@ -75,15 +75,23 @@ async def put_room(
 async def patch_hotel(
         hotel_id: int,
         room_id: int,
-        room_data: RoomPATCH = Body(openapi_examples={
+        room_data: RoomPatchRequest = Body(openapi_examples={
             "1": {"summary": "Цена номера", "value": {
                 "price": 15000,
             }},
         })
 ):
-    room_data.hotel_id = hotel_id
+    _room_data = RoomPatch(
+        hotel_id=hotel_id,
+        **room_data.model_dump(exclude_unset=True)
+    )
     async with async_session() as session:
-        await RoomsRepository(session).edit(room_data, exclude_unset=True, id=room_id)
+        await RoomsRepository(session).edit(
+            _room_data,
+            exclude_unset=True,
+            id=room_id,
+            hotel_id=hotel_id,
+        )
         await session.commit()
 
     return {"status": "OK"}

@@ -9,6 +9,16 @@ router = APIRouter(
 )
 
 
+@router.get("", summary="Получение всех данных бронирования")
+async def get_booking(db: DBDep):
+    return await db.bookings.get_all()
+
+
+@router.get("/me", summary="Получение своих данных бронирования")
+async def get_my_booking(user_id: UserIdDep, db: DBDep):
+    return await db.bookings.get_filtered(user_id=user_id)
+
+
 @router.post("", summary="Добавление бронирования")
 async def post_booking(
         user_id: UserIdDep,
@@ -31,13 +41,3 @@ async def post_booking(
     await db.commit()
 
     return {"status": "OK", "data": booking}
-
-
-@router.get("", summary="Получение всех данных бронирования")
-async def get_booking(db: DBDep):
-    return await db.bookings.get_all()
-
-
-@router.get("/me", summary="Получение своих данных бронирования")
-async def get_self_booking(user_id: UserIdDep, db: DBDep):
-    return await db.bookings.get_filtered(user_id=user_id)

@@ -13,30 +13,12 @@ class HotelsRepository(BaseRepository):
     model = HotelsOrm
     schema = Hotel
 
-    async def get_all(
-            self,
-            title,
-            location,
-            limit,
-            offset
-    ):
-        query = select(self.model)
-        if title:
-            query = query.filter(HotelsOrm.title.icontains(title))
-
-        if location:
-            query = query.filter(HotelsOrm.location.icontains(location))
-
-        query = (
-            query
-            .limit(limit)
-            .offset(offset)
-        )
-        result = await self.session.execute(query)
-        return [self.schema.model_validate(model) for model in result.scalars().all()]
-
     async def get_filtered_by_time(
             self,
+            title: str,
+            location: str,
+            limit: int,
+            offset: int,
             date_from: date,
             date_to: date,
     ):
@@ -50,4 +32,11 @@ class HotelsRepository(BaseRepository):
             .filter(RoomsOrm.id.in_(rooms_ids_to_get))
         )
 
-        return await self.get_filtered(HotelsOrm.id.in_(hotels_ids_to_get))
+        filters = [HotelsOrm.id.in_(hotels_ids_to_get)]
+        if title:
+            filters.append(HotelsOrm.title.icontains(title))
+
+        if location:
+            filters.append(HotelsOrm.location.icontains(location))
+
+        return await self.get_filtered(*filters, limit=limit, offset=offset)

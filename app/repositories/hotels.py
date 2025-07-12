@@ -31,12 +31,18 @@ class HotelsRepository(BaseRepository):
             .select_from(RoomsOrm)
             .filter(RoomsOrm.id.in_(rooms_ids_to_get))
         )
+        query = select(self.model).filter(HotelsOrm.id.in_(hotels_ids_to_get))
 
-        filters = [HotelsOrm.id.in_(hotels_ids_to_get)]
         if title:
-            filters.append(HotelsOrm.title.icontains(title))
+            query = query.filter(HotelsOrm.title.icontains(title))
 
         if location:
-            filters.append(HotelsOrm.location.icontains(location))
+            query = query.filter(HotelsOrm.location.icontains(location))
 
-        return await self.get_filtered(*filters, limit=limit, offset=offset)
+        query = (
+            query
+            .limit(limit)
+            .offset(offset)
+        )
+        result = await self.session.execute(query)
+        return [self.schema.model_validate(model) for model in result.scalars().all()]

@@ -11,7 +11,7 @@ router = APIRouter(
 
 @router.get("", summary="Все удобства")
 async def get_facilities(db: DBDep):
-    return await db.facilities.get_filtered()
+    return await db.facilities.get_all()
 
 
 @router.post("", summary="Добавить удобство")

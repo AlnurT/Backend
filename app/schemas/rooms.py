@@ -6,10 +6,15 @@ class RoomAddRequest(BaseModel):
     description: str | None = Field(None, description="Описание")
     price: int = Field(description="Цена за сутки")
     quantity: int = Field(description="Вместительность")
+    facilities_ids: list[int] | None = Field(None, description="Список удобств")
 
 
-class RoomAdd(RoomAddRequest):
+class RoomAdd(BaseModel):
     hotel_id: int = Field(description="Айди отеля")
+    title: str = Field(description="Название номера")
+    description: str | None = Field(None, description="Описание")
+    price: int = Field(description="Цена за сутки")
+    quantity: int = Field(description="Вместительность")
 
 
 class Room(RoomAdd):

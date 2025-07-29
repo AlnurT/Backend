@@ -18,3 +18,5 @@ class RoomFacilityAdd(BaseModel):
 
 class RoomFacility(RoomFacilityAdd):
     id: int = Field(description="Айди связи удобства и комнаты")
+
+    model_config = ConfigDict(from_attributes=True)

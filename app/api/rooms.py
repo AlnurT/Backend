@@ -71,9 +71,10 @@ async def put_room(
         room_data: RoomAddRequest = Body(openapi_examples={
             "1": {"summary": "Обычный -> Люкс", "value": {
                 "title": "Люкс",
-                "description": "Номер с видом на реку",
-                "price": 12000,
+                "description": "Двухместный номер люкс",
+                "price": 15000,
                 "quantity": 3,
+                "facilities_ids": [2, 3],
             }},
             "2": {"summary": "Ошибка", "value": {
                 "title": "Обычный",
@@ -82,6 +83,25 @@ async def put_room(
 ):
     _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
     await db.rooms.edit(_room_data, id=room_id)
+
+    old_room_facilities = await db.rooms_facilities.get_filtered(room_id=room_id)
+    old_facilities = [
+        item.facility_id
+        for item in old_room_facilities
+    ]
+    delete_facilities = [
+        facility
+        for facility in old_facilities
+        if facility not in room_data.facilities_ids
+    ]
+    await db.rooms_facilities.delete_bulk(delete_facilities, room_id=room_id)
+
+    rooms_facilities_data = [
+        RoomFacilityAdd(room_id=room_id, facility_id=f_id)
+        for f_id in room_data.facilities_ids
+        if f_id not in old_facilities
+    ]
+    await db.rooms_facilities.add_bulk(rooms_facilities_data)
     await db.commit()
 
     return {"status": "OK"}

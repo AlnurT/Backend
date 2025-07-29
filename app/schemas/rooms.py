@@ -6,7 +6,7 @@ class RoomAddRequest(BaseModel):
     description: str | None = Field(None, description="Описание")
     price: int = Field(description="Цена за сутки")
     quantity: int = Field(description="Вместительность")
-    facilities_ids: list[int] | None = Field(None, description="Список удобств")
+    facilities_ids: list[int] = Field([], description="Список удобств")
 
 
 class RoomAdd(BaseModel):
@@ -28,7 +28,12 @@ class RoomPatchRequest(BaseModel):
     description: str | None = Field(None, description="Описание")
     price: int | None = Field(None, description="Цена за сутки")
     quantity: int | None = Field(None, description="Вместительность")
+    facilities_ids: list[int] = Field([], description="Список удобств")
 
 
-class RoomPatch(RoomPatchRequest):
+class RoomPatch(BaseModel):
     hotel_id: int | None = Field(None, description="Айди отеля")
+    title: str | None = Field(None, description="Название номера")
+    description: str | None = Field(None, description="Описание")
+    price: int | None = Field(None, description="Цена за сутки")
+    quantity: int | None = Field(None, description="Вместительность")

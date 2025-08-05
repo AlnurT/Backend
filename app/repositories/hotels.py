@@ -3,15 +3,15 @@ from datetime import date
 from sqlalchemy import select
 
 from app.models.rooms import RoomsOrm
+from app.repositories.mappers.mappers import HotelDataMapper
 from app.repositories.utils import rooms_ids_for_booking
-from app.schemas.hotels import Hotel
 from app.repositories.base import BaseRepository
 from app.models.hotels import HotelsOrm
 
 
 class HotelsRepository(BaseRepository):
     model = HotelsOrm
-    schema = Hotel
+    mapper = HotelDataMapper
 
     async def get_filtered_by_time(
             self,
@@ -45,4 +45,6 @@ class HotelsRepository(BaseRepository):
             .offset(offset)
         )
         result = await self.session.execute(query)
-        return [self.schema.model_validate(model) for model in result.scalars().all()]
+        return [
+            self.mapper.map_to_domain_entity(model) for model in result.scalars().all()
+        ]

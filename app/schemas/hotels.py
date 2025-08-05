@@ -9,8 +9,6 @@ class HotelAdd(BaseModel):
 class Hotel(HotelAdd):
     id: int = Field(description="Айди отеля")
 
-    model_config = ConfigDict(from_attributes=True)
-
 
 class HotelPATCH(BaseModel):
     title: str | None = Field(None, description="Название отеля")

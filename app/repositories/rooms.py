@@ -37,7 +37,7 @@ class RoomsRepository(BaseRepository):
             for model in result.unique().scalars().all()
         ]
 
-    async def get_one_or_none(self, hotel_id: int, id: int):
+    async def get_one_or_none_with_rels(self, hotel_id: int, id: int):
         query = (
             select(self.model)
             .options(joinedload(self.model.facilities))

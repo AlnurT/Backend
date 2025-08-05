@@ -36,3 +36,16 @@ class RoomsRepository(BaseRepository):
             RoomWithRels.model_validate(model)
             for model in result.unique().scalars().all()
         ]
+
+    async def get_one_or_none(self, hotel_id: int, id: int):
+        query = (
+            select(self.model)
+            .options(joinedload(self.model.facilities))
+            .filter_by(id=id, hotel_id=hotel_id)
+        )
+        result = await self.session.execute(query)
+        res = result.unique().scalars().one_or_none()
+        if res is None:
+            return None
+
+        return RoomWithRels.model_validate(res)

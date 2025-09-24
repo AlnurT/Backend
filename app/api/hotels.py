@@ -17,8 +17,8 @@ async def get_hotels(
         db: DBDep,
         title: str | None = Query(None, description="Название отеля"),
         location: str | None = Query(None, description="Локация"),
-        date_from: date = Query(example="2025-12-10"),
-        date_to: date = Query(example="2025-06-16"),
+        date_from: date = Query(example="2025-06-10"),
+        date_to: date = Query(example="2025-12-16"),
 ):
     per_page = pagination.per_page or 5
     return await db.hotels.get_filtered_by_time(
@@ -43,8 +43,8 @@ async def post_hotel(
             "1": {"summary": "Пекин", "value": {
                 "title": "Дракон", "location": "Пекин"
             }},
-            "2": {"summary": "Ошибка", "value": {
-                "title": "Дракон"
+            "2": {"summary": "Токио", "value": {
+                "title": "Сакура", "location": "Токио"
             }},
         })
 ):
@@ -62,9 +62,6 @@ async def put_hotel(
             "1": {"summary": "Пекин -> Хайнань", "value": {
                 "title": "Змея", "location": "Хайнань"
             }},
-            "2": {"summary": "Ошибка", "value": {
-                "title": "Змея"
-            }},
         })
 ):
     await db.hotels.edit(data, id=hotel_id)
@@ -78,11 +75,8 @@ async def patch_hotel(
         db: DBDep,
         hotel_id: int,
         data: HotelPATCH = Body(openapi_examples={
-            "1": {"summary": "Полное изменение", "value": {
-                "title": "Змея", "location": "Хайнань"
-            }},
-            "2": {"summary": "Частичное изменение", "value": {
-                "title": "Змея"
+            "1": {"summary": "Частичное изменение", "value": {
+                "title": "Уж"
             }},
         })
 ):

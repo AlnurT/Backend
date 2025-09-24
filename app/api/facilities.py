@@ -24,6 +24,9 @@ async def post_facility(
             "2": {"summary": "Бильярд", "value": {
                 "title": "Бильярд"
             }},
+            "3": {"summary": "Мини бар", "value": {
+                "title": "Мини бар"
+            }},
         })
 ):
     facility = await db.facilities.add(facility_data)

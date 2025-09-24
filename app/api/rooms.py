@@ -40,13 +40,16 @@ async def post_room(
         room_data: RoomAddRequest = Body(openapi_examples={
             "1": {"summary": "Обычный номер", "value": {
                 "title": "Обычный",
-                "description": "Номер с видом на реку",
-                "price": 5000,
-                "quantity": 2,
-                "facilities_ids": [1, 2],
+                "price": 4000,
+                "quantity": 10,
+                "facilities_ids": [3],
             }},
-            "2": {"summary": "Ошибка", "value": {
-                "title": "Обычный",
+            "2": {"summary": "Вип номер", "value": {
+                "title": "Вип",
+                "description": "Номер с видом на реку",
+                "price": 9000,
+                "quantity": 5,
+                "facilities_ids": [1, 2],
             }},
         })
 ):
@@ -69,15 +72,12 @@ async def put_room(
         hotel_id: int,
         room_id: int,
         room_data: RoomAddRequest = Body(openapi_examples={
-            "1": {"summary": "Обычный -> Люкс", "value": {
+            "1": {"summary": "Вип -> Люкс", "value": {
                 "title": "Люкс",
                 "description": "Двухместный номер люкс",
                 "price": 15000,
                 "quantity": 3,
-                "facilities_ids": [2, 3],
-            }},
-            "2": {"summary": "Ошибка", "value": {
-                "title": "Обычный",
+                "facilities_ids": [1, 2, 3],
             }},
         })
 ):
@@ -97,9 +97,12 @@ async def patch_hotel(
         room_id: int,
         room_data: RoomPatchRequest = Body(openapi_examples={
             "1": {"summary": "Цена номера", "value": {
-                "price": 16000,
+                "price": 20000,
             }},
-            "2": {"summary": "Только удобства", "value": {
+            "2": {"summary": "Количество номеров", "value": {
+                "quantity": 1,
+            }},
+            "3": {"summary": "Только удобства", "value": {
                 "facilities_ids": [1, 3],
             }},
         })

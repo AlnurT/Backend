@@ -24,9 +24,14 @@ async def post_booking(
         user_id: UserIdDep,
         db: DBDep,
         data_booking: BookingAddRequest = Body(openapi_examples={
-            "1": {"summary": "Бронь", "value": {
+            "1": {"summary": "Бронь обычного", "value": {
                 "date_from": "2025-09-01",
                 "date_to": "2025-09-11",
+                "room_id": 3,
+            }},
+            "2": {"summary": "Бронь випа", "value": {
+                "date_from": "2025-09-05",
+                "date_to": "2025-09-15",
                 "room_id": 4,
             }},
         }),

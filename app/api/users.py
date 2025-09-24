@@ -17,8 +17,8 @@ async def register_user(
             "1": {"summary": "Альнур", "value": {
                 "email": "alnur@mail.ru", "password": "12345"
             }},
-            "2": {"summary": "Ошибка", "value": {
-                "email": "alnur", "password": "12345"
+            "2": {"summary": "Талгат", "value": {
+                "email": "talga@mail.ru", "password": "12345"
             }},
         })
 ):
@@ -44,6 +44,9 @@ async def login_user(
             }},
             "3": {"summary": "Неверный пароль", "value": {
                 "email": "alnur@mail.ru", "password": "1"
+            }},
+            "4": {"summary": "Талгат", "value": {
+                "email": "talga@mail.ru", "password": "12345"
             }},
         }),
 ):

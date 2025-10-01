@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Body
+from fastapi_cache.decorator import cache
 
 from app.api.dependencies import DBDep
 from app.schemas.facilities import FacilityAdd
+from app.tasks.tasks import test_task
 
 router = APIRouter(
     prefix="/facilities",
@@ -10,7 +12,9 @@ router = APIRouter(
 
 
 @router.get("", summary="Все удобства")
+@cache(expire=10)
 async def get_facilities(db: DBDep):
+    test_task.delay()
     return await db.facilities.get_all()
 
 

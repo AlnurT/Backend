@@ -15,16 +15,20 @@ async def test_booking_crud(db):
         price=5000,
     )
 
-    await db.bookings.add(booking_data)
+    new_booking = await db.bookings.add(booking_data)
 
-    db_booking = await db.bookings.get_filtered(user_id=user_id, room_id=room_id)
-    assert db_booking
-    assert db_booking[0].user_id == user_id
-    assert db_booking[0].room_id == room_id
+    booking = await db.bookings.get_one_or_none(id=new_booking.id)
+    assert booking
+    assert booking.id == new_booking.id
+    assert booking.user_id == new_booking.user_id
+    assert booking.room_id == new_booking.room_id
 
     booking_data.price = 10000
-    await db.bookings.edit(user_id=user_id, data=booking_data)
+    await db.bookings.edit(id=new_booking.id, data=booking_data)
+    booking = await db.bookings.get_one_or_none(id=new_booking.id)
+    assert booking
+    assert booking.price == booking_data.price
 
-    await db.bookings.delete(user_id=user_id)
-
-    await db.commit()
+    await db.bookings.delete(id=new_booking.id)
+    booking = await db.bookings.get_one_or_none(id=new_booking.id)
+    assert booking is None

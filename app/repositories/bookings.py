@@ -34,7 +34,7 @@ class BookingsRepository(BaseRepository):
 
         if data.room_id not in rooms_ids_to_book:
             raise HTTPException(
-                status_code=401,
+                status_code=500,
                 detail="Больше нет номеров",
         )
         return await self.add(data)

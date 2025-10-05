@@ -1,5 +1,6 @@
 from datetime import date
 
+from fastapi import HTTPException
 from sqlalchemy import select
 
 from app.models.bookings import BookingsOrm
@@ -18,3 +19,11 @@ class BookingsRepository(BaseRepository):
         )
         res = await self.session.execute(query)
         return [self.mapper.map_to_domain_entity(booking) for booking in res.scalars().all()]
+
+    async def add_booking(self, data, quantity):
+        if quantity <= 0:
+            raise HTTPException(
+                status_code=401,
+                detail="Больше нет номеров",
+        )
+        return await self.add(data)

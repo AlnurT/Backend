@@ -25,24 +25,25 @@ async def post_booking(
         db: DBDep,
         data_booking: BookingAddRequest = Body(openapi_examples={
             "1": {"summary": "Бронь обычного", "value": {
-                "date_from": "2025-09-01",
-                "date_to": "2025-09-11",
+                "date_from": "2025-07-01",
+                "date_to": "2025-07-31",
                 "room_id": 3,
             }},
             "2": {"summary": "Бронь випа", "value": {
-                "date_from": "2025-09-05",
-                "date_to": "2025-09-15",
+                "date_from": "2025-07-01",
+                "date_to": "2025-07-31",
                 "room_id": 4,
             }},
         }),
 ):
     room = await db.rooms.get_one_or_none(id=data_booking.room_id)
+    hotel = await db.hotels.get_one_or_none(id=room.hotel_id)
     _data_booking = BookingAdd(
         user_id=user_id,
         price=room.price,
         **data_booking.model_dump()
     )
-    booking = await db.bookings.add_booking(_data_booking, room.quantity)
+    booking = await db.bookings.add_booking(_data_booking, hotel.id)
     await db.commit()
 
     return {"status": "OK", "data": booking}

@@ -12,7 +12,7 @@ from app.api.dependencies import get_db
 from app.config import settings
 from app.database import engine_null_pool, Base, async_session_maker_null_pool
 from app.main import app
-from app.models import * # noqa: F403
+from app.models import *  # noqa: F403
 from app.schemas.hotels import HotelAdd
 from app.schemas.rooms import RoomAdd
 from app.utils.db_manager import DBManager
@@ -71,7 +71,7 @@ async def register_user(setup_database, ac):
         json={
             "email": "alnur@mail.ru",
             "password": "12345",
-        }
+        },
     )
 
 
@@ -82,7 +82,7 @@ async def authenticated_ac(register_user, ac):
         json={
             "email": "alnur@mail.ru",
             "password": "12345",
-        }
+        },
     )
     assert ac.cookies.get("access_token")
 

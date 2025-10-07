@@ -36,5 +36,5 @@ class BookingsRepository(BaseRepository):
             raise HTTPException(
                 status_code=500,
                 detail="Больше нет номеров",
-        )
+            )
         return await self.add(data)

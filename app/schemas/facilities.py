@@ -6,7 +6,7 @@ class FacilityAdd(BaseModel):
 
 
 class Facility(FacilityAdd):
-    id:  int = Field(description="Айди удобства")
+    id: int = Field(description="Айди удобства")
 
 
 class RoomFacilityAdd(BaseModel):

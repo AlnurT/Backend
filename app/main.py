@@ -23,9 +23,7 @@ from app.api.facilities import router as router_facilities
 async def lifespan(app: FastAPI):
     await redis_manager.connect()
     FastAPICache.init(redis_manager.redis, prefix="fastapi-cache")
-
     yield
-
     await redis_manager.close()
 
 
@@ -35,6 +33,7 @@ app.include_router(router_hotels)
 app.include_router(router_rooms)
 app.include_router(router_bookings)
 app.include_router(router_facilities)
+
 
 @app.get("/", include_in_schema=False)
 async def root():

@@ -21,20 +21,28 @@ async def get_my_booking(user_id: UserIdDep, db: DBDep):
 
 @router.post("", summary="Добавление бронирования")
 async def post_booking(
-        user_id: UserIdDep,
-        db: DBDep,
-        data_booking: BookingAddRequest = Body(openapi_examples={
-            "1": {"summary": "Бронь обычного", "value": {
-                "date_from": "2025-07-01",
-                "date_to": "2025-07-31",
-                "room_id": 3,
-            }},
-            "2": {"summary": "Бронь випа", "value": {
-                "date_from": "2025-07-01",
-                "date_to": "2025-07-31",
-                "room_id": 4,
-            }},
-        }),
+    user_id: UserIdDep,
+    db: DBDep,
+    data_booking: BookingAddRequest = Body(
+        openapi_examples={
+            "1": {
+                "summary": "Бронь обычного",
+                "value": {
+                    "date_from": "2025-07-01",
+                    "date_to": "2025-07-31",
+                    "room_id": 3,
+                },
+            },
+            "2": {
+                "summary": "Бронь випа",
+                "value": {
+                    "date_from": "2025-07-01",
+                    "date_to": "2025-07-31",
+                    "room_id": 4,
+                },
+            },
+        }
+    ),
 ):
     room = await db.rooms.get_one_or_none(id=data_booking.room_id)
     hotel = await db.hotels.get_one_or_none(id=room.hotel_id)

@@ -12,7 +12,7 @@ if typing.TYPE_CHECKING:
 class FacilitiesOrm(Base):
     __tablename__ = "facilities"
 
-    id:  Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(100))
 
     rooms: Mapped[list["RoomsOrm"]] = relationship(

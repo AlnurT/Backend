@@ -28,7 +28,7 @@ async def register_user(
 
         await db.users.add(hashed_data)
         await db.commit()
-    except:
+    except: # noqa: E722
         raise HTTPException(400)
 
     return {"status": "OK"}

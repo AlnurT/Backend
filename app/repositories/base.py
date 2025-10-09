@@ -1,4 +1,4 @@
-from asyncpg import ForeignKeyViolationError
+from asyncpg import ForeignKeyViolationError, UniqueViolationError
 from pydantic import BaseModel
 from sqlalchemy import select, insert, update, delete
 from sqlalchemy.exc import NoResultFound, IntegrityError
@@ -49,18 +49,20 @@ class BaseRepository:
         return self.mapper.map_to_domain_entity(res)
 
     async def add(self, data: BaseModel):
-        add_stmt = (
-            insert(self.model)
-            .values(**data.model_dump())
-            .returning(self.model)
-        )
         try:
+            add_stmt = (
+                insert(self.model)
+                .values(**data.model_dump())
+                .returning(self.model)
+            )
             result = await self.session.execute(add_stmt)
-        except IntegrityError:
-            raise ObjectNotFoundException
+            res = result.scalars().one()
+            return self.mapper.map_to_domain_entity(res)
+        except IntegrityError as ex:
+            if isinstance(ex.orig.__cause__, UniqueViolationError):
+                raise ObjectAlreadyExistsException from ex
 
-        res = result.scalars().one()
-        return self.mapper.map_to_domain_entity(res)
+            raise ex
 
     async def add_bulk(self, data: list[BaseModel]):
         add_stmt = (

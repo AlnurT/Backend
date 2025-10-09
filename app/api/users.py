@@ -33,12 +33,13 @@ async def register_user(
 ):
     hashed_password = AuthServices().hash_password(data.password)
     hashed_data = UserAdd(email=data.email, hashed_password=hashed_password)
+
     try:
         await db.users.add(hashed_data)
+        await db.commit()
     except ObjectAlreadyExistsException:
         raise HTTPException(409, "Email уже используется")
 
-    await db.commit()
     return {"status": "OK"}
 
 

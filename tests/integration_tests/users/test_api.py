@@ -2,24 +2,27 @@ import pytest
 from httpx import AsyncClient
 
 
-@pytest.mark.parametrize("email, password, status_code", [
-    ("abc@mail.ru", "12345", 200),
-    ("abc@mail.ru", "12345", 400),
-    ("abc@mail", "12345", 422),
-    ("abc", "12345", 422),
-])
+@pytest.mark.parametrize(
+    "email, password, status_code",
+    [
+        ("abc@mail.ru", "12345", 200),
+        ("abc@mail.ru", "12345", 400),
+        ("abc@mail", "12345", 422),
+        ("abc", "12345", 422),
+    ],
+)
 async def test_auth(
-        email: str,
-        password: str,
-        status_code: int,
-        ac: AsyncClient,
+    email: str,
+    password: str,
+    status_code: int,
+    ac: AsyncClient,
 ):
     reg_response = await ac.post(
         "/auth/register",
         json={
             "email": email,
             "password": password,
-        }
+        },
     )
     assert reg_response.status_code == status_code
     if status_code != 200:
@@ -30,7 +33,7 @@ async def test_auth(
         json={
             "email": email,
             "password": password,
-        }
+        },
     )
     assert login_response.status_code == 200
     login_res = login_response.json()

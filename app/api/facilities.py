@@ -20,18 +20,23 @@ async def get_facilities(db: DBDep):
 
 @router.post("", summary="Добавить удобство")
 async def post_facility(
-        db: DBDep,
-        facility_data: FacilityAdd = Body(openapi_examples={
-            "1": {"summary": "Джакузи", "value": {
-                "title": "Джакузи",
-            }},
-            "2": {"summary": "Бильярд", "value": {
-                "title": "Бильярд"
-            }},
-            "3": {"summary": "Мини бар", "value": {
-                "title": "Мини бар"
-            }},
-        })
+    db: DBDep,
+    facility_data: FacilityAdd = Body(
+        openapi_examples={
+            "1": {
+                "summary": "Джакузи",
+                "value": {"title": "Джакузи"},
+            },
+            "2": {
+                "summary": "Бильярд",
+                "value": {"title": "Бильярд"}
+            },
+            "3": {
+                "summary": "Мини бар",
+                "value": {"title": "Мини бар"}
+            },
+        }
+    ),
 ):
     facility = await db.facilities.add(facility_data)
     await db.commit()

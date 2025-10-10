@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from time import sleep
 
 from app.database import async_session_maker_null_pool
@@ -13,10 +14,9 @@ def test_task():
 
 
 async def get_bookings_with_today_checkin_helper():
-    print("Я ЗАПУСКАЮСЬ")
     async with DBManager(session_factory=async_session_maker_null_pool) as db:
         bookings = await db.bookings.get_bookings_with_today_checkin()
-        print(f"{bookings=}")
+        logging.debug(f"{bookings=}")
 
 
 @celery_instance.task(name="booking_today_checkin")

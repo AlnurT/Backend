@@ -1,9 +1,10 @@
 from datetime import date
 
-from fastapi import APIRouter, Body, Query
+from fastapi import APIRouter, Body, Query, HTTPException
 from fastapi_cache.decorator import cache
 
 from app.api.dependencies import PaginationDep, DBDep
+from app.exceptions import ObjectNotFoundException, check_date_to_after_date_from
 from app.schemas.hotels import HotelAdd, HotelPATCH
 
 router = APIRouter(
@@ -15,14 +16,16 @@ router = APIRouter(
 @router.get("", summary="Список отелей или отеля")
 @cache(expire=10)
 async def get_hotels(
-        pagination: PaginationDep,
-        db: DBDep,
-        title: str | None = Query(None, description="Название отеля"),
-        location: str | None = Query(None, description="Локация"),
-        date_from: date = Query(examples="2025-06-10"),
-        date_to: date = Query(examples="2025-12-16"),
+    pagination: PaginationDep,
+    db: DBDep,
+    title: str | None = Query(None, description="Название отеля"),
+    location: str | None = Query(None, description="Локация"),
+    date_from: date = Query(example="2025-06-10"),
+    date_to: date = Query(example="2025-12-16"),
 ):
+    check_date_to_after_date_from(date_from, date_to)
     per_page = pagination.per_page or 5
+
     return await db.hotels.get_filtered_by_time(
         title=title,
         location=location,
@@ -34,20 +37,34 @@ async def get_hotels(
 
 
 @router.get("/{hotel_id}", summary="Один отель")
-async def get_hotel(hotel_id: int, db: DBDep,):
-    return await db.hotels.get_one_or_none(id=hotel_id)
+async def get_hotel(
+    hotel_id: int,
+    db: DBDep,
+):
+    try:
+        return await db.hotels.get_one(id=hotel_id)
+    except ObjectNotFoundException:
+        raise HTTPException(404, "Отель не найден")
 
 
 @router.post("", summary="Добавление отеля")
 async def post_hotel(
         db: DBDep,
         hotel_data: HotelAdd = Body(openapi_examples={
-            "1": {"summary": "Пекин", "value": {
-                "title": "Дракон", "location": "Пекин"
-            }},
-            "2": {"summary": "Токио", "value": {
-                "title": "Сакура", "location": "Токио"
-            }},
+            "1": {
+                "summary": "Пекин",
+                "value": {
+                    "title": "Дракон",
+                    "location": "Пекин"
+                }
+            },
+            "2": {
+                "summary": "Токио",
+                "value": {
+                    "title": "Сакура",
+                    "location": "Токио"
+                }
+            },
         })
 ):
     hotel = await db.hotels.add(hotel_data)
@@ -61,9 +78,13 @@ async def put_hotel(
         db: DBDep,
         hotel_id: int,
         data: HotelAdd = Body(openapi_examples={
-            "1": {"summary": "Пекин -> Хайнань", "value": {
-                "title": "Змея", "location": "Хайнань"
-            }},
+            "1": {
+                "summary": "Пекин -> Хайнань",
+                "value": {
+                    "title": "Змея",
+                    "location": "Хайнань"
+                }
+            },
         })
 ):
     await db.hotels.edit(data, id=hotel_id)
@@ -77,9 +98,10 @@ async def patch_hotel(
         db: DBDep,
         hotel_id: int,
         data: HotelPATCH = Body(openapi_examples={
-            "1": {"summary": "Частичное изменение", "value": {
-                "title": "Уж"
-            }},
+            "1": {
+                "summary": "Частичное изменение",
+                "value": {"title": "Уж"}
+            },
         })
 ):
     await db.hotels.edit(data, exclude_unset=True, id=hotel_id)

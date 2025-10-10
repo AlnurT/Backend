@@ -7,9 +7,9 @@ from app.models.rooms import RoomsOrm
 
 
 def rooms_ids_for_booking(
-        date_from: date,
-        date_to: date,
-        hotel_id: int | None = None,
+    date_from: date,
+    date_to: date,
+    hotel_id: int | None = None,
 ):
     rooms_count = (
         select(BookingsOrm.room_id, func.count("*").label("rooms_booked"))
@@ -54,7 +54,7 @@ def rooms_ids_for_booking(
         .select_from(rooms_left_table)
         .filter(
             rooms_left_table.c.rooms_left > 0,
-            rooms_left_table.c.room_id.in_(select(rooms_ids_for_hotel))
+            rooms_left_table.c.room_id.in_(select(rooms_ids_for_hotel)),
         )
     )
 

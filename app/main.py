@@ -1,15 +1,15 @@
 from contextlib import asynccontextmanager
-
-import uvicorn
-from fastapi import FastAPI
-
+import logging
 import sys
 from pathlib import Path
 
+from fastapi import FastAPI
 from fastapi_cache import FastAPICache
 from starlette.responses import RedirectResponse
+import uvicorn
 
 sys.path.append(str(Path(__file__).parent.parent))
+logging.basicConfig(level=logging.DEBUG)
 
 from app.init import redis_manager
 from app.api.hotels import router as router_hotels
@@ -23,6 +23,7 @@ from app.api.facilities import router as router_facilities
 async def lifespan(app: FastAPI):
     await redis_manager.connect()
     FastAPICache.init(redis_manager.redis, prefix="fastapi-cache")
+    logging.info("FastAPI cache initialized")
     yield
     await redis_manager.close()
 

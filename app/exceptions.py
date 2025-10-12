@@ -18,12 +18,20 @@ class HotelNotFoundException(ObjectNotFoundException):
     detail = "Отель не найден"
 
 
+class RoomNotFoundException(ObjectNotFoundException):
+    detail = "Номер не найден"
+
+
 class ObjectAlreadyExistsException(MainException):
     detail = "Объект уже существует"
 
 
 class HotelAlreadyExistsException(ObjectAlreadyExistsException):
     detail = "Отель уже существует"
+
+
+class RoomAlreadyExistsException(ObjectAlreadyExistsException):
+    detail = "Номер уже существует"
 
 
 class AllRoomsAreBookedException(MainException):
@@ -65,3 +73,7 @@ class IncorrectDateHTTPException(MainHTTPException):
 class HotelAlreadyExistsHTTPException(MainHTTPException):
     status_code = 409
     detail = "Отель уже существует"
+
+class RoomAlreadyExistsHTTPException(MainHTTPException):
+    status_code = 409
+    detail = "Номер уже существует"

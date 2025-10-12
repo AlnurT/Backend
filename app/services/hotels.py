@@ -29,18 +29,11 @@ class HotelService(BaseService):
         )
 
     async def get_hotel_by_id(self, hotel_id: int):
-        try:
-            return await self.db.hotels.get_one(id=hotel_id)
-        except ObjectNotFoundException:
-            raise HotelNotFoundException
+        return await self.get_hotel_by_id(hotel_id)
 
     async def create_hotel(self, hotel_data: HotelAdd):
-        try:
-            hotel = await self.db.hotels.add(hotel_data)
-            await self.db.commit()
-        except ObjectAlreadyExistsException:
-            raise HotelAlreadyExistsException
-
+        hotel = await self.db.hotels.add(hotel_data)
+        await self.db.commit()
         return hotel
 
     async def edit_hotel(
@@ -64,4 +57,8 @@ class HotelService(BaseService):
         except ObjectNotFoundException:
             raise HotelNotFoundException
 
-        return {"status": "OK"}
+    async def get_hotel_with_check(self, hotel_id: int):
+        try:
+            return await self.db.hotels.get_one(id=hotel_id)
+        except ObjectNotFoundException:
+            raise HotelNotFoundException

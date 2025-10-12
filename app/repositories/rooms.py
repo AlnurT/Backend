@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import joinedload
 
-from app.exceptions import ObjectNotFoundException
+from app.exceptions import ObjectNotFoundException, RoomNotFoundException
 from app.repositories.base import BaseRepository
 from app.models.rooms import RoomsOrm
 from app.repositories.mappers.mappers import RoomDataMapper, RoomDataWithRelsMapper
@@ -48,8 +48,8 @@ class RoomsRepository(BaseRepository):
         result = await self.session.execute(query)
 
         try:
-            res = result.unique().scalars().one()
+            res = result.unique().scalar_one()
         except NoResultFound:
-            raise ObjectNotFoundException
+            raise RoomNotFoundException
 
         return RoomDataWithRelsMapper.map_to_domain_entity(res)

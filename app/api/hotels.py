@@ -1,11 +1,13 @@
 from datetime import date
 
-from fastapi import APIRouter, Body, Query, HTTPException
+from fastapi import APIRouter, Body, Query
 from fastapi_cache.decorator import cache
 
 from app.api.dependencies import PaginationDep, DBDep
-from app.exceptions import ObjectNotFoundException, check_date_to_after_date_from
+from app.exceptions import (IncorrectDateException, IncorrectDateHTTPException, HotelNotFoundHTTPException,
+                            HotelNotFoundException, HotelAlreadyExistsException, HotelAlreadyExistsHTTPException)
 from app.schemas.hotels import HotelAdd, HotelPATCH
+from app.services.hotels import HotelService
 
 router = APIRouter(
     prefix="/hotels",
@@ -20,31 +22,27 @@ async def get_hotels(
     db: DBDep,
     title: str | None = Query(None, description="Название отеля"),
     location: str | None = Query(None, description="Локация"),
-    date_from: date = Query(example="2025-06-10"),
-    date_to: date = Query(example="2025-12-16"),
+    date_from: date = Query(default="2025-06-10"),
+    date_to: date = Query(default="2025-12-16"),
 ):
-    check_date_to_after_date_from(date_from, date_to)
-    per_page = pagination.per_page or 5
-
-    return await db.hotels.get_filtered_by_time(
-        title=title,
-        location=location,
-        limit=per_page,
-        offset=per_page * (pagination.page - 1),
-        date_from=date_from,
-        date_to=date_to,
-    )
+    try:
+        return await HotelService(db).get_filtered_by_time(
+            pagination=pagination,
+            title=title,
+            location=location,
+            date_from=date_from,
+            date_to=date_to,
+        )
+    except IncorrectDateException:
+        raise IncorrectDateHTTPException
 
 
 @router.get("/{hotel_id}", summary="Один отель")
-async def get_hotel(
-    hotel_id: int,
-    db: DBDep,
-):
+async def get_hotel(hotel_id: int, db: DBDep):
     try:
-        return await db.hotels.get_one(id=hotel_id)
-    except ObjectNotFoundException:
-        raise HTTPException(404, "Отель не найден")
+        return await HotelService(db).get_hotel_by_id(hotel_id)
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
 
 
 @router.post("", summary="Добавление отеля")
@@ -67,8 +65,10 @@ async def post_hotel(
             },
         })
 ):
-    hotel = await db.hotels.add(hotel_data)
-    await db.commit()
+    try:
+        hotel = await HotelService(db).create_hotel(hotel_data)
+    except HotelAlreadyExistsException:
+        raise HotelAlreadyExistsHTTPException
 
     return {"status": "OK", "data": hotel}
 
@@ -87,8 +87,10 @@ async def put_hotel(
             },
         })
 ):
-    await db.hotels.edit(data, id=hotel_id)
-    await db.commit()
+    try:
+        await HotelService(db).edit_hotel(data=data, hotel_id=hotel_id)
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
 
     return {"status": "OK"}
 
@@ -104,15 +106,21 @@ async def patch_hotel(
             },
         })
 ):
-    await db.hotels.edit(data, exclude_unset=True, id=hotel_id)
-    await db.commit()
+    try:
+        await HotelService(db).edit_hotel(
+            data=data, exclude_unset=True, hotel_id=hotel_id
+        )
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
 
     return {"status": "OK"}
 
 
 @router.delete("/{hotel_id}", summary="Удаление отеля")
-async def delete_hotel(hotel_id: int, db: DBDep):
-    await db.hotels.delete(id=hotel_id)
-    await db.commit()
+async def delete_hotel(db: DBDep, hotel_id: int):
+    try:
+        await HotelService(db).delete_hotel(hotel_id)
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
 
     return {"status": "OK"}

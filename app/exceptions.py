@@ -14,17 +14,29 @@ class ObjectNotFoundException(MainException):
     detail = "Объект не найден"
 
 
+class HotelNotFoundException(ObjectNotFoundException):
+    detail = "Отель не найден"
+
+
 class ObjectAlreadyExistsException(MainException):
     detail = "Объект уже существует"
+
+
+class HotelAlreadyExistsException(ObjectAlreadyExistsException):
+    detail = "Отель уже существует"
 
 
 class AllRoomsAreBookedException(MainException):
     detail = "Не осталось свободных номеров"
 
 
+class IncorrectDateException(MainException):
+    detail = "Дата заезда позже даты выезда"
+
+
 def check_date_to_after_date_from(date_from: date, date_to: date) -> None:
     if date_from > date_to:
-        raise HTTPException(422, "Дата заезда позже даты выезда")
+        raise IncorrectDateException
 
 
 class MainHTTPException(HTTPException):
@@ -35,11 +47,21 @@ class MainHTTPException(HTTPException):
         super().__init__(status_code=self.status_code, detail=self.detail)
 
 
-def HotelNotFoundHTTPException(MainHTTPException):
+class HotelNotFoundHTTPException(MainHTTPException):
     status_code = 404
     detail = "Отель не найден"
 
 
-def RoomNotFoundHTTPException(MainHTTPException):
+class RoomNotFoundHTTPException(MainHTTPException):
     status_code = 404
     detail = "Номер не найден"
+
+
+class IncorrectDateHTTPException(MainHTTPException):
+    status_code = 422
+    detail = "Дата заезда позже даты выезда"
+
+
+class HotelAlreadyExistsHTTPException(MainHTTPException):
+    status_code = 409
+    detail = "Отель уже существует"

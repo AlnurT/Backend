@@ -1,13 +1,11 @@
 from datetime import date
 
-from fastapi import APIRouter, Body, Query, HTTPException
+from fastapi import APIRouter, Body, Query
 
 from app.api.dependencies import DBDep
-from app.exceptions import ObjectNotFoundException, ObjectAlreadyExistsException, check_date_to_after_date_from, \
-    IncorrectDateException, IncorrectDateHTTPException, RoomNotFoundException, RoomNotFoundHTTPException, \
-    HotelNotFoundException, HotelNotFoundHTTPException
-from app.schemas.facilities import RoomFacilityAdd
-from app.schemas.rooms import RoomAdd, RoomAddRequest, RoomPatchRequest, RoomPatch
+from app.exceptions import (IncorrectDateException, IncorrectDateHTTPException, RoomNotFoundException,
+                            RoomNotFoundHTTPException, HotelNotFoundException, HotelNotFoundHTTPException)
+from app.schemas.rooms import RoomAddRequest, RoomPatchRequest
 from app.services.rooms import RoomService
 
 router = APIRouter(

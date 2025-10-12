@@ -1,8 +1,6 @@
 from datetime import date
 
-from app.api.dependencies import PaginationDep
-from app.exceptions import check_date_to_after_date_from, ObjectNotFoundException, HotelNotFoundException, \
-    ObjectAlreadyExistsException, HotelAlreadyExistsException, RoomNotFoundException, RoomAlreadyExistsException
+from app.exceptions import check_date_to_after_date_from, ObjectNotFoundException, RoomNotFoundException
 from app.schemas.facilities import RoomFacilityAdd
 from app.schemas.hotels import HotelAdd
 from app.schemas.rooms import RoomAddRequest, RoomAdd

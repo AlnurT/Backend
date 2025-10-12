@@ -1,20 +1,10 @@
-from datetime import date
-
 from fastapi import Response
 
-from app.api.dependencies import PaginationDep, UserIdDep
-from app.exceptions import check_date_to_after_date_from, ObjectNotFoundException, HotelNotFoundException, \
-    ObjectAlreadyExistsException, HotelAlreadyExistsException, RoomNotFoundException, RoomAlreadyExistsException, \
-    EmailAlreadyExistsException, PasswordNotCorrectException
-from app.schemas.bookings import BookingAddRequest, BookingAdd
-from app.schemas.facilities import RoomFacilityAdd
-from app.schemas.hotels import HotelAdd
-from app.schemas.rooms import RoomAddRequest, RoomAdd
+from app.api.dependencies import UserIdDep
+from app.exceptions import ObjectAlreadyExistsException, EmailAlreadyExistsException
 from app.schemas.users import UserRequestAdd, UserAdd
 from app.services.auth import AuthServices
 from app.services.base import BaseService
-from app.services.hotels import HotelService
-from app.services.rooms import RoomService
 
 
 class UserService(BaseService):

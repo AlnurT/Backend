@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Body, HTTPException, Response
+from fastapi import APIRouter, Body, Response
 
 from app.api.dependencies import UserIdDep, DBDep
 from app.exceptions import ObjectAlreadyExistsException, EmailAlreadyExistsHTTPException, UserNotExistException, \
     UserNotExistHTTPException, PasswordNotCorrectHTTPException, PasswordNotCorrectException
-from app.schemas.users import UserRequestAdd, UserAdd
-from app.services.auth import AuthServices
+from app.schemas.users import UserRequestAdd
 from app.services.users import UserService
 
 router = APIRouter(

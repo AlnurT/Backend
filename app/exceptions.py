@@ -74,6 +74,17 @@ class HotelAlreadyExistsHTTPException(MainHTTPException):
     status_code = 409
     detail = "Отель уже существует"
 
+
 class RoomAlreadyExistsHTTPException(MainHTTPException):
     status_code = 409
     detail = "Номер уже существует"
+
+
+class UserNotFoundHTTPException(MainHTTPException):
+    status_code = 401
+    detail = "Нет доступа, войдите в систему"
+
+
+class AllRoomsAreBookedHTTPException(MainHTTPException):
+    status_code = 409
+    detail = "Не осталось свободных номеров"

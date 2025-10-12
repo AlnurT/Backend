@@ -4,6 +4,7 @@ from fastapi import Query, Depends, HTTPException, Request
 from pydantic import BaseModel
 
 from app.database import async_session
+from app.exceptions import UserNotFoundHTTPException
 from app.services.auth import AuthServices
 from app.utils.db_manager import DBManager
 
@@ -22,10 +23,8 @@ PaginationDep = Annotated[PaginationParams, Depends()]
 def get_token(request: Request) -> str:
     token = request.cookies.get("access_token")
     if token is None:
-        raise HTTPException(
-            status_code=401,
-            detail="Вы не предоставили токен доступа",
-        )
+        raise UserNotFoundHTTPException
+
     return token
 
 

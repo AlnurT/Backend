@@ -77,3 +77,9 @@ class RoomService(BaseService):
             raise RoomNotFoundException
 
         return {"status": "OK"}
+
+    async def get_room_with_check(self, room_id: int):
+        try:
+            return await self.db.rooms.get_one(id=room_id)
+        except ObjectNotFoundException:
+            raise RoomNotFoundException

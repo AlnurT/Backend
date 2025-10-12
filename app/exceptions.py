@@ -34,8 +34,24 @@ class RoomAlreadyExistsException(ObjectAlreadyExistsException):
     detail = "Номер уже существует"
 
 
+class EmailAlreadyExistsException(ObjectAlreadyExistsException):
+    detail = "Email уже используется"
+
+
 class AllRoomsAreBookedException(MainException):
     detail = "Не осталось свободных номеров"
+
+
+class UserNotExistException(MainException):
+    detail = "Пользователь не зарегистрирован"
+
+
+class PasswordNotCorrectException(MainException):
+    detail = "Неверный пароль"
+
+
+class TokenNotCorrectException(MainException):
+    detail = "Неверный токен"
 
 
 class IncorrectDateException(MainException):
@@ -80,9 +96,24 @@ class RoomAlreadyExistsHTTPException(MainHTTPException):
     detail = "Номер уже существует"
 
 
+class EmailAlreadyExistsHTTPException(MainHTTPException):
+    status_code = 409
+    detail = "Email уже используется"
+
+
 class UserNotFoundHTTPException(MainHTTPException):
     status_code = 401
     detail = "Нет доступа, войдите в систему"
+
+
+class UserNotExistHTTPException(MainHTTPException):
+    status_code = 401
+    detail = "Пользователь не зарегистрирован"
+
+
+class PasswordNotCorrectHTTPException(MainHTTPException):
+    status_code = 401
+    detail = "Неверный пароль"
 
 
 class AllRoomsAreBookedHTTPException(MainHTTPException):

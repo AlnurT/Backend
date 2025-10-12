@@ -1,6 +1,6 @@
-from http.client import HTTPException
 
-from fastapi import APIRouter, Body
+
+from fastapi import APIRouter, Body, HTTPException
 
 from app.api.dependencies import DBDep, UserIdDep
 from app.exceptions import ObjectNotFoundException, AllRoomsAreBookedException

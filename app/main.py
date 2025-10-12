@@ -9,7 +9,7 @@ from starlette.responses import RedirectResponse
 import uvicorn
 
 sys.path.append(str(Path(__file__).parent.parent))
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 from app.init import redis_manager
 from app.api.hotels import router as router_hotels

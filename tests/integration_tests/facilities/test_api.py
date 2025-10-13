@@ -7,7 +7,7 @@ async def test_post_facilities(ac: AsyncClient):
         "/facilities",
         json={
             "title": facility_name,
-        }
+        },
     )
     res = response.json()
     assert response.status_code == 200

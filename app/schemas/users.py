@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from pydantic import BaseModel, Field, EmailStr
 
 
 class UserRequestAdd(BaseModel):
@@ -18,4 +18,3 @@ class User(BaseModel):
 
 class UserWithHashedPassword(User):
     hashed_password: str = Field(description="Хэш пароль")
-

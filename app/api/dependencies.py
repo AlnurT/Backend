@@ -1,18 +1,20 @@
 from typing import Annotated
 
-from fastapi import Query, Depends, HTTPException, Request
+from fastapi import Query, Depends, Request
 from pydantic import BaseModel
 
 from app.database import async_session
+from app.exceptions import UserNotFoundHTTPException
 from app.services.auth import AuthServices
 from app.utils.db_manager import DBManager
 
 
 class PaginationParams(BaseModel):
     page: Annotated[int | None, Query(1, ge=1, description="Страница")]
-    per_page: Annotated[int | None, Query(
-        None, ge=1, le=20, description="Количество отелей за страницу"
-    )]
+    per_page: Annotated[
+        int | None,
+        Query(None, ge=1, le=20, description="Количество отелей за страницу"),
+    ]
 
 
 PaginationDep = Annotated[PaginationParams, Depends()]
@@ -21,10 +23,8 @@ PaginationDep = Annotated[PaginationParams, Depends()]
 def get_token(request: Request) -> str:
     token = request.cookies.get("access_token")
     if token is None:
-        raise HTTPException(
-            status_code=401,
-            detail="Вы не предоставили токен доступа",
-        )
+        raise UserNotFoundHTTPException
+
     return token
 
 

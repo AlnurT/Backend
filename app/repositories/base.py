@@ -1,6 +1,11 @@
+import logging
+
+from asyncpg import ForeignKeyViolationError, UniqueViolationError
 from pydantic import BaseModel
 from sqlalchemy import select, insert, update, delete
+from sqlalchemy.exc import NoResultFound, IntegrityError
 
+from app.exceptions import ObjectNotFoundException, ObjectAlreadyExistsException
 from app.repositories.mappers.base import DataMapper
 
 
@@ -35,15 +40,37 @@ class BaseRepository:
 
         return self.mapper.map_to_domain_entity(res)
 
-    async def add(self, data: BaseModel):
-        add_stmt = (
-            insert(self.model)
-            .values(**data.model_dump())
-            .returning(self.model)
-        )
-        result = await self.session.execute(add_stmt)
-        res = result.scalars().one()
+    async def get_one(self, **filter_by):
+        query = select(self.model).filter_by(**filter_by)
+        result = await self.session.execute(query)
+        try:
+            res = result.scalar_one()
+        except NoResultFound:
+            raise ObjectNotFoundException
+
         return self.mapper.map_to_domain_entity(res)
+
+    async def add(self, data: BaseModel):
+        try:
+            add_stmt = (
+                insert(self.model)
+                .values(**data.model_dump())
+                .returning(self.model)
+            )
+            result = await self.session.execute(add_stmt)
+            res = result.scalars().one()
+            return self.mapper.map_to_domain_entity(res)
+        except IntegrityError as ex:
+            logging.exception(
+                f"Не удалось добавить данные в БД, входные данные={data}"
+            )
+            if isinstance(ex.orig.__cause__, UniqueViolationError):
+                raise ObjectAlreadyExistsException from ex
+
+            logging.exception(
+                f"Незнакомая ошибка: не удалось добавить данные в БД, входные данные={data}"
+            )
+            raise ex
 
     async def add_bulk(self, data: list[BaseModel]):
         add_stmt = (
@@ -58,8 +85,17 @@ class BaseRepository:
             .filter_by(**filter_by)
             .values(**data.model_dump(exclude_unset=exclude_unset))
         )
-        await self.session.execute(edit_stmt)
+        try:
+            await self.session.execute(edit_stmt)
+        except IntegrityError:
+            raise ObjectNotFoundException
 
     async def delete(self, **filter_by):
-        delete_stmt = (delete(self.model).filter_by(**filter_by))
-        await self.session.execute(delete_stmt)
+        delete_stmt = (
+            delete(self.model)
+            .filter_by(**filter_by)
+        )
+        try:
+            await self.session.execute(delete_stmt)
+        except IntegrityError:
+            raise ObjectNotFoundException

@@ -78,7 +78,7 @@ async def login_user(
     ),
 ):
     try:
-        access_token = await UserService(db).login_user(response=response, data=user_data)
+        access_token = await UserService(db).login_user(data=user_data)
 
     except UserNotExistException:
         raise UserNotExistHTTPException
@@ -86,6 +86,7 @@ async def login_user(
     except PasswordNotCorrectException:
         raise PasswordNotCorrectHTTPException
 
+    response.set_cookie("access_token", access_token)
     return {"access_token": access_token}
 
 

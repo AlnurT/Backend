@@ -18,14 +18,13 @@ class UserService(BaseService):
         except ObjectAlreadyExistsException:
             raise EmailAlreadyExistsException
 
-    async def login_user(self, response: Response, data: UserRequestAdd):
+    async def login_user(self, data: UserRequestAdd):
         user = await self.db.users.get_user_with_hashed_password(data.email)
         AuthServices().verify_password(
             plain_password=data.password,
             hashed_password=user.hashed_password,
         )
         access_token = AuthServices().create_access_token({"user_id": user.id})
-        response.set_cookie("access_token", access_token)
         return access_token
 
     async def get_me(self, user_id: UserIdDep):

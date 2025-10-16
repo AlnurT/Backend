@@ -1,3 +1,5 @@
+git config user.name "Alnur"
+git config user.email "alnur.tazhbenov@mail.ru"
 
 docker network create myNetwork
 

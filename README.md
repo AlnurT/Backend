@@ -19,20 +19,7 @@ docker run --name booking_cache \
 
 docker build -t booking_image .
 
-docker run --name booking_back \
-    -p 7777:8000 \
-    --network=myNetwork \
-    booking_image
-
-docker run --name booking_celery_worker \
-    --network=myNetwork \
-    booking_image \
-    celery --app=app.tasks.celery_app:celery_instance worker -l INFO
-
-docker run --name booking_celery_beat \
-    --network=myNetwork \
-    booking_image \
-    celery --app=app.tasks.celery_app:celery_instance beat -l INFO
+docker compose up -d --build
 
 docker run --name booking_nginx \
     --volume ./nginx.conf:/etc/nginx/nginx.conf \

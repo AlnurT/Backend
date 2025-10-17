@@ -1,3 +1,5 @@
+git config user.name "Alnur"
+git config user.email "alnur.tazhbenov@mail.ru"
 
 docker network create myNetwork
 
@@ -31,3 +33,8 @@ docker run --name booking_celery_beat \
     --network=myNetwork \
     booking_image \
     celery --app=app.tasks.celery_app:celery_instance beat -l INFO
+
+docker run --name booking_nginx \
+    --volume ./nginx.conf:/etc/nginx/nginx.conf \
+    --network=myNetwork \
+    --rm -p 80:80 nginx

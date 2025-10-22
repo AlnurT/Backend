@@ -11,12 +11,12 @@ import uvicorn
 sys.path.append(str(Path(__file__).parent.parent))
 logging.basicConfig(level=logging.INFO)
 
-from app.init import redis_manager
-from app.api.hotels import router as router_hotels
-from app.api.users import router as router_users
-from app.api.rooms import router as router_rooms
-from app.api.bookings import router as router_bookings
-from app.api.facilities import router as router_facilities
+from app.init import redis_manager  # noqa:E402
+from app.api.hotels import router as router_hotels  # noqa:E402
+from app.api.users import router as router_users  # noqa:E402
+from app.api.rooms import router as router_rooms  # noqa:E402
+from app.api.bookings import router as router_bookings  # noqa:E402
+from app.api.facilities import router as router_facilities  # noqa:E402
 
 
 @asynccontextmanager

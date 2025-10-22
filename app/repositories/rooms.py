@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import joinedload
 
-from app.exceptions import ObjectNotFoundException, RoomNotFoundException
+from app.exceptions import RoomNotFoundException
 from app.repositories.base import BaseRepository
 from app.models.rooms import RoomsOrm
 from app.repositories.mappers.mappers import RoomDataMapper, RoomDataWithRelsMapper

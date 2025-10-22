@@ -1,6 +1,6 @@
 import logging
 
-from asyncpg import ForeignKeyViolationError, UniqueViolationError
+from asyncpg import UniqueViolationError
 from pydantic import BaseModel
 from sqlalchemy import select, insert, update, delete
 from sqlalchemy.exc import NoResultFound, IntegrityError

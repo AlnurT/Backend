@@ -4,8 +4,14 @@ from fastapi import APIRouter, Body, Query
 from fastapi_cache.decorator import cache
 
 from app.api.dependencies import PaginationDep, DBDep
-from app.exceptions import (IncorrectDateException, IncorrectDateHTTPException, HotelNotFoundHTTPException,
-                            HotelNotFoundException, HotelAlreadyExistsException, HotelAlreadyExistsHTTPException)
+from app.exceptions import (
+    IncorrectDateException,
+    IncorrectDateHTTPException,
+    HotelNotFoundHTTPException,
+    HotelNotFoundException,
+    HotelAlreadyExistsException,
+    HotelAlreadyExistsHTTPException,
+)
 from app.schemas.hotels import HotelAdd, HotelPATCH
 from app.services.hotels import HotelService
 
@@ -47,23 +53,13 @@ async def get_hotel(hotel_id: int, db: DBDep):
 
 @router.post("", summary="Добавление отеля")
 async def post_hotel(
-        db: DBDep,
-        hotel_data: HotelAdd = Body(openapi_examples={
-            "1": {
-                "summary": "Пекин",
-                "value": {
-                    "title": "Дракон",
-                    "location": "Пекин"
-                }
-            },
-            "2": {
-                "summary": "Токио",
-                "value": {
-                    "title": "Сакура",
-                    "location": "Токио"
-                }
-            },
-        })
+    db: DBDep,
+    hotel_data: HotelAdd = Body(
+        openapi_examples={
+            "1": {"summary": "Пекин", "value": {"title": "Дракон", "location": "Пекин"}},
+            "2": {"summary": "Токио", "value": {"title": "Сакура", "location": "Токио"}},
+        }
+    ),
 ):
     try:
         hotel = await HotelService(db).create_hotel(hotel_data)
@@ -75,17 +71,13 @@ async def post_hotel(
 
 @router.put("/{hotel_id}", summary="Полное изменение отеля")
 async def put_hotel(
-        db: DBDep,
-        hotel_id: int,
-        data: HotelAdd = Body(openapi_examples={
-            "1": {
-                "summary": "Пекин -> Хайнань",
-                "value": {
-                    "title": "Змея",
-                    "location": "Хайнань"
-                }
-            },
-        })
+    db: DBDep,
+    hotel_id: int,
+    data: HotelAdd = Body(
+        openapi_examples={
+            "1": {"summary": "Пекин -> Хайнань", "value": {"title": "Змея", "location": "Хайнань"}},
+        }
+    ),
 ):
     try:
         await HotelService(db).edit_hotel(data=data, hotel_id=hotel_id)
@@ -97,19 +89,16 @@ async def put_hotel(
 
 @router.patch("/{hotel_id}", summary="Частичное изменение отеля")
 async def patch_hotel(
-        db: DBDep,
-        hotel_id: int,
-        data: HotelPATCH = Body(openapi_examples={
-            "1": {
-                "summary": "Частичное изменение",
-                "value": {"title": "Уж"}
-            },
-        })
+    db: DBDep,
+    hotel_id: int,
+    data: HotelPATCH = Body(
+        openapi_examples={
+            "1": {"summary": "Частичное изменение", "value": {"title": "Уж"}},
+        }
+    ),
 ):
     try:
-        await HotelService(db).edit_hotel(
-            data=data, exclude_unset=True, hotel_id=hotel_id
-        )
+        await HotelService(db).edit_hotel(data=data, exclude_unset=True, hotel_id=hotel_id)
     except HotelNotFoundException:
         raise HotelNotFoundHTTPException
 

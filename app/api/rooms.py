@@ -3,8 +3,14 @@ from datetime import date
 from fastapi import APIRouter, Body, Query
 
 from app.api.dependencies import DBDep
-from app.exceptions import (IncorrectDateException, IncorrectDateHTTPException, RoomNotFoundException,
-                            RoomNotFoundHTTPException, HotelNotFoundException, HotelNotFoundHTTPException)
+from app.exceptions import (
+    IncorrectDateException,
+    IncorrectDateHTTPException,
+    RoomNotFoundException,
+    RoomNotFoundHTTPException,
+    HotelNotFoundException,
+    HotelNotFoundHTTPException,
+)
 from app.schemas.rooms import RoomAddRequest, RoomPatchRequest
 from app.services.rooms import RoomService
 
@@ -34,7 +40,6 @@ async def get_rooms(
         raise HotelNotFoundHTTPException
 
 
-
 @router.get("/{hotel_id}/rooms/{room_id}", summary="Один номер отеля")
 async def get_room(db: DBDep, hotel_id: int, room_id: int):
     try:
@@ -45,6 +50,7 @@ async def get_room(db: DBDep, hotel_id: int, room_id: int):
 
     except RoomNotFoundException:
         raise RoomNotFoundHTTPException
+
 
 @router.post("/{hotel_id}/rooms", summary="Добавление номера")
 async def post_room(
@@ -144,7 +150,10 @@ async def patch_hotel(
 ):
     try:
         await RoomService(db).edit_room(
-            hotel_id=hotel_id, room_id=room_id, data=room_data, exclude_unset=True,
+            hotel_id=hotel_id,
+            room_id=room_id,
+            data=room_data,
+            exclude_unset=True,
         )
 
     except HotelNotFoundException:

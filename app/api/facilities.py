@@ -4,12 +4,8 @@ from fastapi_cache.decorator import cache
 from app.api.dependencies import DBDep
 from app.schemas.facilities import FacilityAdd
 from app.services.facilities import FacilityService
-from app.tasks.tasks import test_task
 
-router = APIRouter(
-    prefix="/facilities",
-    tags=["Удобства"]
-)
+router = APIRouter(prefix="/facilities", tags=["Удобства"])
 
 
 @router.get("", summary="Все удобства")
@@ -27,14 +23,8 @@ async def post_facility(
                 "summary": "Джакузи",
                 "value": {"title": "Джакузи"},
             },
-            "2": {
-                "summary": "Бильярд",
-                "value": {"title": "Бильярд"}
-            },
-            "3": {
-                "summary": "Мини бар",
-                "value": {"title": "Мини бар"}
-            },
+            "2": {"summary": "Бильярд", "value": {"title": "Бильярд"}},
+            "3": {"summary": "Мини бар", "value": {"title": "Мини бар"}},
         }
     ),
 ):

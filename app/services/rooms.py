@@ -1,6 +1,10 @@
 from datetime import date
 
-from app.exceptions import check_date_to_after_date_from, ObjectNotFoundException, RoomNotFoundException
+from app.exceptions import (
+    check_date_to_after_date_from,
+    ObjectNotFoundException,
+    RoomNotFoundException,
+)
 from app.schemas.facilities import RoomFacilityAdd
 from app.schemas.hotels import HotelAdd
 from app.schemas.rooms import RoomAddRequest, RoomAdd
@@ -10,10 +14,10 @@ from app.services.hotels import HotelService
 
 class RoomService(BaseService):
     async def get_filtered_by_time(
-            self,
-            hotel_id: int,
-            date_from: date,
-            date_to: date,
+        self,
+        hotel_id: int,
+        date_from: date,
+        date_to: date,
     ):
         check_date_to_after_date_from(date_from, date_to)
         await HotelService(self.db).get_hotel_with_check(hotel_id)
@@ -35,8 +39,7 @@ class RoomService(BaseService):
         room = await self.db.rooms.add(_room_data)
 
         rooms_facilities_data = [
-            RoomFacilityAdd(room_id=room.id, facility_id=f_id)
-            for f_id in data.facilities_ids
+            RoomFacilityAdd(room_id=room.id, facility_id=f_id) for f_id in data.facilities_ids
         ]
         if rooms_facilities_data:
             await self.db.rooms_facilities.add_bulk(rooms_facilities_data)
@@ -45,11 +48,11 @@ class RoomService(BaseService):
         return room
 
     async def edit_room(
-            self,
-            hotel_id: int,
-            room_id: int,
-            data: HotelAdd,
-            exclude_unset: bool = False,
+        self,
+        hotel_id: int,
+        room_id: int,
+        data: HotelAdd,
+        exclude_unset: bool = False,
     ):
         await HotelService(self.db).get_hotel_with_check(hotel_id)
 

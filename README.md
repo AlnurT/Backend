@@ -1,35 +1,47 @@
-git config user.name "Alnur"
-git config user.email "alnur.tazhbenov@mail.ru"
+### Общей сеть между контейнерами:
+`docker network create myNetwork`
 
-docker network create myNetwork
-
-docker run --name booking_db \
+### Контейнер с базой данных Postgres:
+`docker run --name booking_db \
     -p 6432:5432 \
     -e POSTGRES_USER=postgres \
     -e POSTGRES_PASSWORD=postgres \
     -e POSTGRES_DB=booking \
     --network=myNetwork \
     --volume pg-booking-data:/var/lib/postgresql/data \
-    -d postgres:16
+    -d postgres:16`
 
-docker run --name booking_cache \
+### Контейнер с Redis:
+`docker run --name booking_cache \
     -p 7379:6379 \
     --network=myNetwork \
-    -d redis:7.4
+    -d redis:7.4`
 
-docker build -t booking_image .
+### Контейнер с бэком:
+`docker compose up -d --build`
 
-docker run --name booking_back \
-    -p 7777:8000 \
+### Контейнер с nginx:
+`docker run --name booking_nginx \
+    --volume ./nginx.conf:/etc/nginx/nginx.conf \
     --network=myNetwork \
-    booking_image
+    --rm -p 80:80 nginx`
 
-docker run --name booking_celery_worker \
-    --network=myNetwork \
-    booking_image \
-    celery --app=app.tasks.celery_app:celery_instance worker -l INFO
+### Запуск раннера:
+`docker run -d --name gitlab-runner --restart always \
+  -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  gitlab/gitlab-runner:alpine`
 
-docker run --name booking_celery_beat \
-    --network=myNetwork \
-    booking_image \
-    celery --app=app.tasks.celery_app:celery_instance beat -l INFO
+### Регистрация раннера:
+`docker run --rm -it \
+    -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+    gitlab/gitlab-runner:alpine register`
+
+### Изменение конфига:
+`nano /srv/gitlab-runner/config/config.toml`
+
+Меняем
+`volumes = ["/cache"] `
+на
+
+`volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]`

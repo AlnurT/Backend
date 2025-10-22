@@ -18,9 +18,7 @@ class AuthServices:
         )
         to_encode |= {"exp": expire}
         encoded_jwt = jwt.encode(
-            to_encode,
-            settings.JWT_SECRET_KEY,
-            algorithm=settings.JWT_ALGORITHM
+            to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
         )
         return encoded_jwt
 
@@ -34,10 +32,6 @@ class AuthServices:
     @staticmethod
     def decode_token(token: str) -> dict:
         try:
-            return jwt.decode(
-                token,
-                settings.JWT_SECRET_KEY,
-                algorithms=[settings.JWT_ALGORITHM]
-            )
+            return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
         except jwt.exceptions.DecodeError:
             raise TokenNotCorrectException

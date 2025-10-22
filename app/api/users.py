@@ -1,8 +1,14 @@
 from fastapi import APIRouter, Body, Response
 
 from app.api.dependencies import UserIdDep, DBDep
-from app.exceptions import ObjectAlreadyExistsException, EmailAlreadyExistsHTTPException, UserNotExistException, \
-    UserNotExistHTTPException, PasswordNotCorrectHTTPException, PasswordNotCorrectException
+from app.exceptions import (
+    ObjectAlreadyExistsException,
+    EmailAlreadyExistsHTTPException,
+    UserNotExistException,
+    UserNotExistHTTPException,
+    PasswordNotCorrectHTTPException,
+    PasswordNotCorrectException,
+)
 from app.schemas.users import UserRequestAdd
 from app.services.users import UserService
 
@@ -14,23 +20,13 @@ router = APIRouter(
 
 @router.post("/register", summary="Добавление пользователя")
 async def register_user(
-        db: DBDep,
-        user_data: UserRequestAdd = Body(openapi_examples={
-            "1": {
-                "summary": "Альнур",
-                "value": {
-                    "email": "alnur@mail.ru",
-                    "password": "12345"
-                }
-            },
-            "2": {
-                "summary": "Талгат",
-                "value": {
-                    "email": "talga@mail.ru",
-                    "password": "12345"
-                }
-            },
-        })
+    db: DBDep,
+    user_data: UserRequestAdd = Body(
+        openapi_examples={
+            "1": {"summary": "Альнур", "value": {"email": "alnur@mail.ru", "password": "12345"}},
+            "2": {"summary": "Талгат", "value": {"email": "talga@mail.ru", "password": "12345"}},
+        }
+    ),
 ):
     try:
         await UserService(db).register_user(user_data)
@@ -46,34 +42,16 @@ async def login_user(
     response: Response,
     user_data: UserRequestAdd = Body(
         openapi_examples={
-            "1": {
-                "summary": "Альнур",
-                "value": {
-                    "email": "alnur@mail.ru",
-                    "password": "12345"
-                }
-            },
+            "1": {"summary": "Альнур", "value": {"email": "alnur@mail.ru", "password": "12345"}},
             "2": {
                 "summary": "Неверный логин",
-                "value": {
-                    "email": "al@mail.ru",
-                    "password": "12345"
-                },
+                "value": {"email": "al@mail.ru", "password": "12345"},
             },
             "3": {
                 "summary": "Неверный пароль",
-                "value": {
-                    "email": "alnur@mail.ru",
-                    "password": "1"
-                },
+                "value": {"email": "alnur@mail.ru", "password": "1"},
             },
-            "4": {
-                "summary": "Талгат",
-                "value": {
-                    "email": "talga@mail.ru",
-                    "password": "12345"
-                }
-            },
+            "4": {"summary": "Талгат", "value": {"email": "talga@mail.ru", "password": "12345"}},
         }
     ),
 ):
